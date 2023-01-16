@@ -1,25 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
+import Table from './components/Table'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const socket = io('https://birdnest-back.fly.dev');
+    socket.on('data', (newData) => {
+      setData(newData);
+    });
+    return () => {
+      socket.disconnect();
+    }
+  }, []);
+
+  if (data === null || data === undefined)
+    return <></>
+  else
+    return <Table droneEntries={Object.values(data)}/>;
 }
 
 export default App;
